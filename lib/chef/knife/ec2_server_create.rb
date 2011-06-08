@@ -268,7 +268,12 @@ class Chef
         end
 
         # wait for it to be ready to do stuff
-        server.wait_for { print "."; ready? }
+        retries = 3
+        begin
+          server.wait_for { print "."; ready? }
+        rescue Excon::Errors::Soc
+          retry if (retries -= 1) > 0
+        end
 
         puts("\n")
 
