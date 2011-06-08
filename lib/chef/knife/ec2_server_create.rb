@@ -68,6 +68,16 @@ class Chef
         :long => "--node-name NAME",
         :description => "The Chef node name for your new node"
 
+      option :dns_hostname,
+        :short => "-H DNS_HOSTNAME",
+        :long => "--dns-hostname DNS_HOSTNAME",
+        :description => "The DNS Hostname to use for new node"
+
+      option :dns_domain,
+        :short => "-D DNS_DOMAIN",
+        :long => "--dns-domain DNS_DOMAIN",
+        :description => "The DNS Domain to use for new node"
+
       option :ssh_key_name,
         :short => "-S KEY",
         :long => "--ssh-key KEY",
@@ -321,6 +331,10 @@ class Chef
         bootstrap.config[:use_sudo] = true unless config[:ssh_user] == 'root'
         bootstrap.config[:template_file] = locate_config_value(:template_file)
         bootstrap.config[:environment] = config[:environment]
+        bootstrap.config[:ip_address] = server.private_ip_address
+        bootstrap.config[:dns_hostname] = config[:dns_hostname]
+        bootstrap.config[:dns_domain] = config[:dns_domain]
+        
         # may be needed for vpc_mode
         bootstrap.config[:no_host_key_verify] = config[:no_host_key_verify]
         bootstrap
