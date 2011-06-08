@@ -246,6 +246,11 @@ class Chef
       end
         server = connection.servers.create(server_def)
 
+        # name node consistently with chef node name
+        connection.tags.create(:key => 'Name', :value => config[:chef_node_name], :resource_id => server.identity)
+        server.reload
+
+        puts "#{ui.color("Name", :cyan)}: #{server.tags['Name']}"
         puts "#{ui.color("Instance ID", :cyan)}: #{server.id}"
         puts "#{ui.color("Flavor", :cyan)}: #{server.flavor_id}"
         puts "#{ui.color("Image", :cyan)}: #{server.image_id}"
@@ -285,6 +290,7 @@ class Chef
         bootstrap_for_node(server).run
 
         puts "\n"
+        puts "#{ui.color("Name", :cyan)}: #{server.tags['Name']}"
         puts "#{ui.color("Instance ID", :cyan)}: #{server.id}"
         puts "#{ui.color("Flavor", :cyan)}: #{server.flavor_id}"
         puts "#{ui.color("Image", :cyan)}: #{server.image_id}"

@@ -58,8 +58,10 @@ class Chef
         )
 
         @name_args.each do |instance_id|
-          server = connection.servers.get(instance_id)
+          server = connection.servers.get(instance_id) ||
+            connection.servers.find{|server| server.tags['Name'] == instance_id}
 
+          msg_pair("Name", server.tags['Name'])
           msg_pair("Instance ID", server.id)
           msg_pair("Flavor", server.flavor_id)
           msg_pair("Image", server.image_id)
