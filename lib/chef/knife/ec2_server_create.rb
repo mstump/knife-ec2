@@ -36,6 +36,11 @@ class Chef
 
       attr_accessor :initial_sleep_delay
 
+      option :price,
+        :short => "-p PRICE",
+        :long => "--price PRICE",
+        :description => "The maximium hourly USD price for instance"
+      
       option :flavor,
         :short => "-f FLAVOR",
         :long => "--flavor FLAVOR",
@@ -244,7 +249,22 @@ class Chef
              'Ebs.DeleteOnTermination' => delete_term
            }]
       end
-        server = connection.servers.create(server_def)
+        server = nil
+
+        # create a spot instance
+        if config[:price]
+          spot_request_def = { :price => config[:price] }
+          spot_request_def.merge(server_def)
+          spot_request = connection.spot_requests.create(spot_request_def_def)
+          
+          spot_request.wait_for { state == 'active' }
+          
+          server = connection.servers.get('instance-id' => spot_request.instance_id)
+
+        # create on demand instance
+        else
+          server = connection.servers.create(server_def)
+        end
 
         # name node consistently with chef node name
         connection.tags.create(:key => 'Name', :value => config[:chef_node_name], :resource_id => server.identity)
