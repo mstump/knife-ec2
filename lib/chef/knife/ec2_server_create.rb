@@ -255,7 +255,7 @@ class Chef
         if config[:price]
           spot_request_def = { :price => config[:price] }
           spot_request_def.merge(server_def)
-          spot_request = connection.spot_requests.create(spot_request_def_def)
+          spot_request = connection.spot_requests.create(spot_request_def)
           
           spot_request.wait_for { state == 'active' }
           
