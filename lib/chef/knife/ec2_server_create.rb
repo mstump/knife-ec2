@@ -257,9 +257,10 @@ class Chef
           spot_request_def.merge(server_def)
           spot_request = connection.spot_requests.create(spot_request_def)
           
-          spot_request.wait_for { state == 'active' }
+          print "\n#{ui.color("Waiting for spot request", :magenta)}"
+          spot_request.wait_for { print "."; state == 'active' }
           
-          server = connection.servers.get('instance-id' => spot_request.instance_id)
+          server = connection.servers.get(spot_request.instance_id)
 
         # create on demand instance
         else
