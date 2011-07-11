@@ -224,31 +224,31 @@ class Chef
         }
         server_def[:subnet_id] = config[:subnet_id] if config[:subnet_id]
 
-      if ami.root_device_type == "ebs"
-        ami_map = ami.block_device_mapping.first
-        ebs_size = begin
-                     if config[:ebs_size]
-                       Integer(config[:ebs_size]).to_s
-                     else
-                       ami_map["volumeSize"].to_s
+        if ami.root_device_type == "ebs"
+          ami_map = ami.block_device_mapping.first
+          ebs_size = begin
+                       if config[:ebs_size]
+                         Integer(config[:ebs_size]).to_s
+                       else
+                         ami_map["volumeSize"].to_s
+                       end
+                     rescue ArgumentError
+                       puts "--ebs-size must be an integer"
+                       msg opt_parser
+                       exit 1
                      end
-                   rescue ArgumentError
-                     puts "--ebs-size must be an integer"
-                     msg opt_parser
-                     exit 1
-                   end
-        delete_term = if config[:ebs_no_delete_on_term]
-                        "false"
-                      else
-                        ami_map["deleteOnTermination"]
-                      end
-        server_def[:block_device_mapping] =
-          [{
-             'DeviceName' => ami_map["deviceName"],
-             'Ebs.VolumeSize' => ebs_size,
-             'Ebs.DeleteOnTermination' => delete_term
-           }]
-      end
+          delete_term = if config[:ebs_no_delete_on_term]
+                          "false"
+                        else
+                          ami_map["deleteOnTermination"]
+                        end
+          server_def[:block_device_mapping] =
+            [{
+               'DeviceName' => ami_map["deviceName"],
+               'Ebs.VolumeSize' => ebs_size,
+               'Ebs.DeleteOnTermination' => delete_term
+             }]
+        end
         server = nil
 
         # create a spot instance
