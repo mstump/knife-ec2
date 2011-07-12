@@ -258,7 +258,7 @@ class Chef
           spot_request = connection.spot_requests.create(spot_request_def)
           puts "\n"
           puts "#{ui.color("Instance ID", :cyan)}: #{spot_request.id}"
-          puts "#{ui.color("Request Type", :cyan)}: #{spot_request.type}"
+          puts "#{ui.color("Request Type", :cyan)}: #{spot_request.request_type}"
           puts "#{ui.color("Price", :cyan)}: #{spot_request.price}"
           print "\n#{ui.color("Waiting for spot request", :magenta)}"
           spot_request.wait_for { print "."; state == 'active' }
