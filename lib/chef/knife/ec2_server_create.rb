@@ -40,7 +40,7 @@ class Chef
         :short => "-p PRICE",
         :long => "--price PRICE",
         :description => "The maximium hourly USD price for instance"
-      
+
       option :flavor,
         :short => "-f FLAVOR",
         :long => "--flavor FLAVOR",
@@ -243,11 +243,11 @@ class Chef
                           ami_map["deleteOnTermination"]
                         end
           server_def[:block_device_mapping] =
-            [{
+            {
                'DeviceName' => ami_map["deviceName"],
                'Ebs.VolumeSize' => ebs_size,
                'Ebs.DeleteOnTermination' => delete_term
-             }]
+            }
         end
         server = nil
 
@@ -263,7 +263,7 @@ class Chef
           print "\n#{ui.color("Waiting for spot request", :magenta)}"
           spot_request.wait_for { print "."; state == 'active' }
           puts("\n")
-          
+
           server = connection.servers.get(spot_request.instance_id)
 
         # create on demand instance
@@ -311,7 +311,7 @@ class Chef
 
         print "\n#{ui.color("Waiting for sshd", :magenta)}"
 
-        ip_to_test = vpc_mode? ? server.private_ip_address : server.public_ip_address
+        ip_to_test = server.public_ip_address
         print(".") until tcp_test_ssh(ip_to_test) {
           sleep @initial_sleep_delay ||= (vpc_mode? ? 40 : 10)
           puts("done")
@@ -370,7 +370,7 @@ class Chef
         bootstrap.config[:ip_address] = server.private_ip_address
         bootstrap.config[:dns_hostname] = config[:dns_hostname]
         bootstrap.config[:dns_domain] = config[:dns_domain]
-        
+
         # may be needed for vpc_mode
         bootstrap.config[:no_host_key_verify] = config[:no_host_key_verify]
         bootstrap
